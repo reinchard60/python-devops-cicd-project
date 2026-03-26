@@ -4,6 +4,7 @@ from pytest_mock import MockerFixture
 
 from simple_http_checker.checker import check_urls
 
+
 def test_check_urls_success(mocker: MockerFixture):
     mock_requests_get = mocker.patch("simple_http_checker.checker.requests.get")
 
@@ -19,6 +20,7 @@ def test_check_urls_success(mocker: MockerFixture):
     mock_requests_get.assert_called_once_with(urls[0], timeout=5)
     assert results[urls[0]] == "200 OK"
 
+
 def test_check_urls_cliet_error(mocker: MockerFixture):
     mock_requests_get = mocker.patch("simple_http_checker.checker.requests.get")
 
@@ -32,21 +34,21 @@ def test_check_urls_cliet_error(mocker: MockerFixture):
     results = check_urls(urls)
 
     mock_requests_get.assert_called_once_with(urls[0], timeout=5)
-    assert results[urls[0]] == "404 Not Found"    
+    assert results[urls[0]] == "404 Not Found"
+
 
 @pytest.mark.parametrize(
-        "error_exception, expected_status",
-        [
-            (requests.exceptions.Timeout, "TIMEOUT"),
-            (requests.exceptions.ConnectionError, "CONNECTION_ERROR"),
-            (requests.exceptions.RequestException, "REQUEST_ERROR: RequestException")
-        ]
-
+    "error_exception, expected_status",
+    [
+        (requests.exceptions.Timeout, "TIMEOUT"),
+        (requests.exceptions.ConnectionError, "CONNECTION_ERROR"),
+        (requests.exceptions.RequestException, "REQUEST_ERROR: RequestException"),
+    ],
 )
 def test_check_urls_request_exceptions(
-        mocker: MockerFixture, 
-        error_exception: type[requests.exceptions.RequestException], 
-        expected_status: str
+    mocker: MockerFixture,
+    error_exception: type[requests.exceptions.RequestException],
+    expected_status: str,
 ):
     mock_requests_get = mocker.patch("simple_http_checker.checker.requests.get")
     mock_requests_get.side_effect = error_exception(f"Simulated {expected_status}")
@@ -56,6 +58,7 @@ def test_check_urls_request_exceptions(
 
     mock_requests_get.assert_called_once_with(urls[0], timeout=5)
     assert results[urls[0]] == expected_status
+
 
 def test_check_urls_with_multiple_urls(mocker: MockerFixture):
     mock_requests_get = mocker.patch("simple_http_checker.checker.requests.get")
@@ -69,7 +72,7 @@ def test_check_urls_with_multiple_urls(mocker: MockerFixture):
     # Second call: Timeout
     timeout_exception = requests.exceptions.Timeout("Simulated timeout")
 
-    # Third call: 500 Server Error 
+    # Third call: 500 Server Error
     mock_response_fail = mocker.MagicMock(spec=requests.Response)
     mock_response_fail.status_code = 500
     mock_response_fail.reason = "Server Error"
@@ -78,7 +81,7 @@ def test_check_urls_with_multiple_urls(mocker: MockerFixture):
     mock_requests_get.side_effect = [
         mock_response_ok,
         timeout_exception,
-        mock_response_fail
+        mock_response_fail,
     ]
 
     urls = ["https://success.com", "https://timeout.com", "https://servererror.com"]
@@ -90,9 +93,11 @@ def test_check_urls_with_multiple_urls(mocker: MockerFixture):
     assert results["https://timeout.com"] == "TIMEOUT"
     assert results["https://servererror.com"] == "500 Server Error"
 
+
 def test_check_urls_empy_list():
     result = check_urls([])
-    assert result == {} 
+    assert result == {}
+
 
 def test_check_urls_custom_timeout(mocker: MockerFixture):
     mock_requests_get = mocker.patch("simple_http_checker.checker.requests.get")
