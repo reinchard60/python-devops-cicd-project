@@ -18,4 +18,4 @@ jobs:
       - name: Display Python verison and location
         run: |
           python --version
-          with python
+          which python
