@@ -1,14 +1,15 @@
 import logging
 import requests
+from typing import Collection
 
 logger = logging.getLogger(__name__)
 
-def check_urls(urls: list[str], timeout: int = 5) -> dict[str, str]:
+def check_urls(urls: Collection[str], timeout: int = 5) -> dict[str, str]:
     """
     Checks a list of URLs and returns their status.
 
     Args:
-        urls (list[str]): A silt of URL trings to check.
+        urls (Collection[str]): A silt of URL trings to check.
         timeout (int, optional): Maximum time in seconds to wait for each request. Defaults to 5.
 
     Returns:
