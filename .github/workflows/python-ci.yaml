@@ -45,7 +45,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-verison: ${{ matrix.pyten-verison }}
+          python-verison: ${{ matrix.pyton-verison }}
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
